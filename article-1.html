@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<html>
+<div class="header">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class='navbar-brand' href="index.html">Mr.NOODLE blog</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">À propos</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+
+        </div>
+    
+    </nav>
+<h1>
+  Tartarus:Write-up
+</h1>
+</div>
+
+<head>
+    <title>Mr.NOODLE's blog</title>
+</head>    
+<body>
+    <style>
+      code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}       
+        .article-list{
+  margin-top: 10vh;
+  width: 60%;
+  margin-left: 20%;
+  background: #000019;
+  padding: 5% 10% 1% 10%;
+  border-radius: 1vw;
+  box-shadow: 7px 10px 20px 1px rgba(0,0,0,0.58);
+  padding-bottom: -15vh;
+  margin-bottom: 15vh;
+}
+h2{
+    color: white;
+}
+p {
+    color: white;
+}
+.article{
+  margin-bottom: 10vh;
+  margin-top: 5vh;
+  padding-top: 4vh;
+  display: inline-block;
+  border-top: 1px solid #333;
+}
+
+.first_article{
+  margin-top: -5vh;
+  border-top: none;
+
+}
+.article h2{
+  margin-top: 3vw;
+  margin-bottom: 1vw;
+}
+footer {
+    display: flex;
+    justify-content: center;
+}
+
+.header::before{
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 40vh;
+  background-image: url("img/background.gif");
+  background-size: cover;
+  background-position: center;
+  filter: brightness(50%);
+  z-index: -1;
+}
+
+.header h1{
+  color: white;
+  text-align: center;
+  padding-top: 6%;
+  font-size: 3vw;
+}
+h1{
+  color: white;
+}
+li{
+  color: white;
+}
+body{
+  background: #070707;
+    background-color: rgb(7, 7, 7);
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-image: none;
+    background-size: auto;
+    background-origin: padding-box;
+    background-clip: border-box;
+overflow-x: hidden;
+}
+code{
+  background: black;
+}
+@media screen and (max-width: 640px) {
+  .header h1{
+    color: white;
+    font-size: 10vw;
+    margin-top: 15%;
+  }
+
+  .article-list{
+    width: 90%;
+    margin-left: 5%;
+  }
+
+  .article h2{
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+
+  .article-list{
+    margin-bottom: 10vh;
+    padding: 8% 10% 0.5% 10%;
+  }
+
+  .header .nav{
+    margin-left: 0%;
+    width: 100%;
+    margin-top: 20px;
+    float: none;
+  }
+}
+</style> 
+<section class="article-list">
+  <h1> 1) Énumération </h1>
+<p>Commençons d'abord par un petit scan nmap avec cette commande:
+  <strong>sudo nmap -A -sV "l'ip de la machine" -T5 -v</strong><br>
+  cette commande suffira amplement pour ce CTF. Nous avons donc comme résultat que le port 21,22 et le port 80 visitons donc cela. Quand on va sur le site présent dans le port 80 nous avons la page de base d'apache mais fouillons un peu. En allant dans la page robots.txt nous avons un dossier nommé <strong>/admin-dir</strong> en allant le visiter nous pouvons s'appercevoir qu'il y a 2 fichier qui pourrait être intérrésant pour plus tard qui semble être un userlist et une wordlist alors téléchargeons le. Maintenant checkons le port 21, nous pouvons constater que on peut se loguer en FTP en anonymous alors loguons nous.<br>
+    <img src="img/article1/ftp.png" width="500" height="300">
+<br>Nous avons un dossier caché qui se nomme <strong>...</strong> plongeons nous dans ce dossier.
+À l'intérieur, nous avons un fichier txt se nommant <strong>yougotgoodeye.txt</strong> nous avons un dossier web secret nommé
+<strong>/sUp3r-s3cr3t</strong> contenant une page de login. C'est là qu'on peut ressortir nos fichier qu'on a trouvé dans le admin-dir  
+d'abord nous devons voir comment est constitué la page de login pour pouvoir mener une attaque bruteforce.<br>
+</p>
+<img src="img/article1/secret_dir.png" width="600" height="300">
+<br> <h1> 2) Exploitation</h1>
+<p>Pour le bruteforce, je vais utiliser un tool appellé hydra qui est un couteau suisse du bruteforce.
+  ainsi nous allons écrire cette commande <strong>hydra -L userid -P credentials.txt 10.10.159.219 http-post-form "/sUp3r-s3cr3t/authenticate.php:username=^USER^&password=^PASS^:Incorrect username!"</strong> et je vais vous expliquez.</p>
+  <ul>
+<li>
+   <strong>-L</strong> pour spécifier quelle userlist nous allons utilisé (dans ce cas là nous utilisons la userlist qu'on a récupérer dans le /admin-dir)
+</li>
+<li>
+  <strong>-P</strong> pour spécifier quelle passlist nous allons utilisé (dans ce cas nous allons toujours utilisé la passlist qu'on a récupérer dans le /admin-dir)
+</li>
+<li>
+  <strong>http-post-form</strong> effecter des requetes http post pour le bruteforce
+</li>
+<li>
+  <strong>Incorrect username!</strong> pour indiquer le message d'erreur qu'on a quand on se logue avec des mauvais creds
+</li>
+</ul>
+<p>
+<img src="img/article1/bruteforce.png" width="800" height="300">
+<br>Donc maintenant essayons de se loguer en tant que enox pour voir si le message d'erreur change et en effet, nous pouvons constater que le message d'erreur change de "Incorrect username!" à "Incorrect password!"  donc modifions notre synthaxe pour remplacer d'abord le <strong>-L userid</strong> par <strong>-l enox</strong> ainsi que le message d'erreur. 
+Et bingo nous avons le password de enox et on peut se loguer avec.
+après s'être loguer en tant que enox, on est redirigé vers une page auxquelle se présente un "upload file" permettant d'upload des ficher de toute sorte 
+uploadons donc un reverse shell en php qu'on peut trouver <a href="https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php"> Ici</a> et lançons un listener sur notre machine.
+Mais après avoir uploader le fichier, nous savons pas où se trouve notre page alors checkons cela avec gobuster. et en effet le fichier est upload dans la directory <strong>/images/uploads/</strong>. Maintenant lançons notre notre reverse shell en php et bingo nous avons un shell en www-data maintenant place à l'escalation de privileges
+</p>
+<br><h1>3) Privesc</h1>
+<p>maintenant que nous avons un shell essayons d'escalader nos privilèges car bon c'est beau d'avoir un shell mais mieux vaut avoir un shell avec plus de droit.
+<br>En faisant un sudo -l, nous avons ceci 
+<img src="img/article1/privesc1.png" width="800" height="300">
+<br>Mais comment avec simplement cette information nous pouvons escalader nos privilèges ?
+la réponse se trouves dans un site connu appellé <a href="https://gtfobins.github.io/">GTFObins</a> qui est un petit cheatsheet du privesc et c'est ce site qu'on va utiliser aujourd'hui. Alors GTFobins nous dis qu'en faisant cette commande on arrivera à pop un shell avec gdb avec cette commande <code>sudo -u thirtytwo /var/www/gdb -nx -ex '!sh' -ex quit</code>
+et Pouf nous avons fait apparaitre un shell avec comme user 'Thirtytwo'. Maintenant checkons en faisant un sudo -l qu'elle sont les possibles vecteur d'escalation de privilège et en effet nous avons un possible vecteur comme vous pouvez voir dans ce screen <br>
+<img src="img/article1/privesc2.png" width="800" height="400">
+<br>(Pour ce privesc je vous conseilles de faire pop un TTY avec cette commande <code>python -c 'import pty;pty.spawn("bin/bash")'</code>)
+<br>encore une fois notre ami gtfobins nous donne un moyen de privesc avec cette commande <code>sudo -u d4rckh /usr/bin/git -p help config</code> puis après avoir fait cette commande vous tappez <code>!/bin/bash</code> et pouf vous avez un shell en tant que d4rckh et ça c'est beau.
+<br>Maintenant, nous avons assez de privilége pour avoir le flag root. En faisant un ls dans le dossier home du user d4rckh nous pouvons voir que nous avons un fichier python nommé cleanup.py
+en ouvrant ce fichier on dirait qu'il a pour intérét de supprimer tout les fichiers présent dans le fichier /home/cleanup donc j'imagines qu'il y a un cron derriere tout ça alors ouvrons le fichier /etc/crontab et en effet nous pouvons voir que en tant que le fichier python est executé avec les droits root toutes les 2 minutes. <br>
+<img src="img/article1/privesc4.png" width="800" height="350">
+<br>Mais bon avec le shell que nous avons, nous pouvons pas faire un vi potable ou un nano alors après mûre réflexion j'ai eu l'idée de créer un fichier python sur ma machine qui ouvre le /root/root.txt et qui le met dans un fichier présent en <strong>/tmp/</strong> après avoir créer ce fichier je le fous dans la machine victime dans le <strong>/home/d4rckh</strong>et après cela je fais cette commande <code>cat flag.py > cleanup.py</code> et on vérifie si ma technique marche ...
+<img src="img/article1/root.png" width="700" height="200">
+<br>En effet il marche nickel et on a le fameux saint-graal.
+</p>
+<h2>Merci de votre lecture</h2>
+
+</section>
+</body>
