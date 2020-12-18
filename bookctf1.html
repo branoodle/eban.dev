@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<html>
+<div class="header">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class='navbar-brand' href="index.html">Mr.NOODLE blog</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">À propos</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+
+        </div>
+    
+    </nav>
+<h1>
+  WU:MikaCTF pour le BookCTF
+</h1>
+</div>
+
+<head>
+    <title>Mr.NOODLE's blog</title>
+</head>    
+<body>
+    <style>
+      code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}       
+        .article-list{
+  margin-top: 10vh;
+  width: 60%;
+  margin-left: 20%;
+  background: #000019;
+  padding: 5% 10% 1% 10%;
+  border-radius: 1vw;
+  box-shadow: 7px 10px 20px 1px rgba(0,0,0,0.58);
+  padding-bottom: -15vh;
+  margin-bottom: 15vh;
+  overflow: hidden;
+}
+h2{
+    color: white;
+}
+p {
+    color: white;
+    font-size: 1.5em;
+}
+.article{
+  margin-bottom: 10vh;
+  margin-top: 5vh;
+  padding-top: 4vh;
+  display: inline-block;
+  border-top: 1px solid #333;
+}
+
+.first_article{
+  margin-top: -5vh;
+  border-top: none;
+
+}
+.article h2{
+  margin-top: 3vw;
+  margin-bottom: 1vw;
+}
+footer {
+    display: flex;
+    justify-content: center;
+}
+
+.header::before{
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 40vh;
+  background-image: url("img/background.gif");
+  background-size: cover;
+  background-position: center;
+  filter: brightness(50%);
+  z-index: -1;
+}
+
+.header h1{
+  color: white;
+  text-align: center;
+  padding-top: 6%;
+  font-size: 3vw;
+}
+h1{
+  color: white;
+}
+li{
+  color: white;
+}
+body{
+  background: #070707;
+    background-color: rgb(7, 7, 7);
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-image: none;
+    background-size: auto;
+    background-origin: padding-box;
+    background-clip: border-box;
+overflow-x: hidden;
+}
+code{
+  background: black;
+}
+ .article img{
+     max-width:100%;
+     max-height:100%;
+     display: block;
+}
+</style> 
+<section class="article-list">
+<p>Bon bah pour commencer j'aimerais donner un peu de contexte aux WU qui vont suivre.</p></br>
+<p>Tout commença pendant une bonne matinée hivernale je viens d'apprendre que <a href="https://inf0sec.fr/">Unknow101</a> ainsi que <a href="https://mikadmin.fr/blog/">Mika</a> organisaient un CTF de grande ampleur.</p>
+<p>J'imagines que en connaissant mon amours pour les CTF j'ai décidé d'y participer et vue qu'il y avait 2 box rien de plus qu'un petit WU pour de 1 remercier les orgas et les créateurs des challs pour ce ctf incroyable</p>
+<p>Trêve de blabla passons directement pour ce premier WU la box de Mika</p>
+<p>PS:Pour des soucis de type que les boxs sont down juste après le CTF j'ai pas pu illustrer mes propos malheureusement mais faisons preuve d'imagination pour comprendre ce que j'écris (si vous êtes sage vous aurez une image sympa à la fin de l'article)</p>
+<h1>1) Point d'accès</h1>
+<p>Nous débarquons directement sur un site avec la page par défaut de nginx.</p>
+<p>En lancant notre meilleur fuzzing de directory nous avons trouvé un dossier nommé admin/</p>
+<p>En allant dans cette page nous avons un site qui a l'air d'être en dev.Mais nous avons remarqué un truc bizarre une chaine de caractère qui semblerais être du décimal qui est "66 48 48 75 67 84 70 118 50 95 66 114 48" </p>
+<p>Après avoir décodé ça (avec notre outil préféré aka <a href="https://gchq.github.io/CyberChef/">CyberChef</a> nous avons ceci <code>B00KCTFv2_Br0</code></p>
+<p>Gardons ça en tête et maintenant checkons le code source. Dans le code source,nous avons une chaîne de caractère qui semblerais être du base64.</p>
+<p>Après l'avoir décodé nous avons un dossier nommé <code>/b@ckups666_cr3ds/Creds.zip</code> </p>
+<p>Après avoir installé le fichier zip nous pouvons remarquer qu'il a besoin de mdp. Mais attendez resortons notre decimal décodé. Voilà maintenant après avoir dézipper le fichier nous avons un fichier contenant des creds ssh. </p>
+<h1>2) Bon bah maintenant c'est le privesc</h1>
+<p>Alors nous sommes en tant qu'user nommé player.</p>
+<p>Après une très très très longue investigation (c'est faux) nous pouvons constater que le user player a le droit d'éxecuter un script bash en tant que user "Amouranth".</p>
+<p>Comment j'ai pu constater ça ? En faisant un simple <code>sudo -l</code></p>
+<p>Maintenant nous checkons le script qu'on doit executer</p>
+<code>script bash que mika doit me passer</code>
+<p>Nous pouvons voir que le script permet de input des commandes alors faisons pop un shell en tant que amouranth</p>
+<p>Et pouf nous sommes en tant qu'amouranth. Maintenant checkons un moyen d'avoir le flag root.</p>
+<p>Vous pouvez éxecuter le binaire /bin/cat en tant que root et devinez comment j'ai pu avoir cette info ? </p>
+<p>Avec un simple et basique <code>sudo -l</code></p>
+<p>Alors faisons un petit <code>sudo /bin/cat /root/root.txt</code> et pouf nous avons le flag root GG à vous pour vous félicitez voici la petite photo de amouranth</p>
+<img src="img/bookctf/amouranth.jpg" width="500", height="450">
+</section>

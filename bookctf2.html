@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<html>
+<div class="header">
+
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class='navbar-brand' href="index.html">Mr.NOODLE blog</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">À propos</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+
+        </div>
+    
+    </nav>
+<h1>
+  WU:Unknow101box(1 et 2) pour le BookCTF
+</h1>
+</div>
+
+<head>
+    <title>Mr.NOODLE's blog</title>
+</head>    
+<body>
+    <style>
+      code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}       
+        .article-list{
+  margin-top: 10vh;
+  width: 60%;
+  margin-left: 20%;
+  background: #000019;
+  padding: 5% 10% 1% 10%;
+  border-radius: 1vw;
+  box-shadow: 7px 10px 20px 1px rgba(0,0,0,0.58);
+  padding-bottom: -15vh;
+  margin-bottom: 15vh;
+  overflow: hidden;
+}
+h2{
+    color: white;
+}
+p {
+    color: white;
+    font-size: 1.5em;
+}
+.article{
+  margin-bottom: 10vh;
+  margin-top: 5vh;
+  padding-top: 4vh;
+  display: inline-block;
+  border-top: 1px solid #333;
+}
+
+.first_article{
+  margin-top: -5vh;
+  border-top: none;
+
+}
+.article h2{
+  margin-top: 3vw;
+  margin-bottom: 1vw;
+}
+footer {
+    display: flex;
+    justify-content: center;
+}
+
+.header::before{
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 40vh;
+  background-image: url("img/background.gif");
+  background-size: cover;
+  background-position: center;
+  filter: brightness(50%);
+  z-index: -1;
+}
+
+.header h1{
+  color: white;
+  text-align: center;
+  padding-top: 6%;
+  font-size: 3vw;
+}
+h1{
+  color: white;
+}
+li{
+  color: white;
+}
+body{
+  background: #070707;
+    background-color: rgb(7, 7, 7);
+    background-position-x: 0%;
+    background-position-y: 0%;
+    background-repeat: repeat;
+    background-attachment: scroll;
+    background-image: none;
+    background-size: auto;
+    background-origin: padding-box;
+    background-clip: border-box;
+overflow-x: hidden;
+}
+code{
+  background: black;
+}
+ .article img{
+     max-width:100%;
+     max-height:100%;
+     display: block;
+}
+img{
+      max-width: 100%;
+       height: auto;
+
+
+
+
+}
+</style> 
+<section class="article-list">
+  <p>Bon pour cette article,nous allons faire 2 WU pour le prix d'un. Et pour les mêmes raisons que l'article sur la box de Mika, je pourrais pas vous montrer de screen pour illustrer le WU mais une image de compensation se cache à la fin de l'article</p>
+  <h1>1) Unknow101box numéro 1</h1>
+  <p>Alors pour ce WU de la premiere box de Unknow101, nous arrivons sur une page nommé "OhNoMySite", quand on lance un fuzzing de directory nous trouvons une directory nommée <code>/dev</code></p>
+  <p>Mon instinct de détective hors-pair me dis que c'est pas par défaut. Alors checkons ça.</p>
+  <p>En arrivant sur la page /dev , il nous indique que le parametre url n'est pas encore défini donc réglons ce problème en ajoutant à l'url <code>/dev?url=</code> pour définir le parametre</p>
+  <p>mais essayons de réflechir d'exploit cela. Alors nous avons un parametre et un serveur en python comme peut nous le montrer le scan nmap</p>
+  <p>Attendez un champ input et un serveur flask cela me dis un truc attendez je reviens.</p>
+  <p>Bon après vérification, nous sommes bien face à une <a href="https://medium.com/@nyomanpradipta120/ssti-in-flask-jinja2-20b068fdaeee">SSTI</a> (Side Server Template Injection).</p>
+  <p>Nous allons donc utiliser un outil (malheureusement en python2 donc vous pouvez avoir quelques problèmes niveau des librairies) nommé <a href="https://github.com/epinna/tplmap.git">tplmap</a></p>
+  <p>Et pouf nous avons un shell. Bon c'est pas un TTY donc faisons avec les moyens du bord aka avec ses commandes </p>
+  <code>ls -la | ps -aux | cat | echo</code>
+  <p>Et en faisant une liste des process nous avons un /usr/bin/crontab qui est executé donc checkons un cat de /etc/crontab.</p>
+  <p>Nous avons pu remarquer le un script est éxecuté en tant que root qui lance un script bash se trouvant dans <code>/opt/cleaning/clean.sh</code> mais rien pour modifier ce fichier.</p>
+  <p>Mais c'est ce que vous croyez, nous allons sortir notre carte secrète aka la commande <code>echo</code>.</p>
+  <p>Vue qu'on connait la localisation du flag j'ai eu l'idée de faire cette commande</p>
+  <p>
+  <code>echo "cat /root/root.txt > /tmp/.flag.txt" >> /opt/cleaning/clean.sh</code>
+  Et pouf on attend 2 minutes et le flag apparaît comme magie dans le /tmp/.flag.txt donc on nous dis GG et en continue dans notre bonne voie vers la 2eme box de Unknow101</p>
+  <h1>2) La deuxieme box de Unknow101</h1>
+    <p>Bon ils nous restent encore une box à poutrer pour atteindre la fameuse image surprise mais restons concentrer.</p>
+    <p>Bon nous arrivons sur une page deface par des d4rk h4x0r de la mort qui tue mais attendez si ce sont des d4rk h4x0r comment je pourrais avoir une directory intérrésante.</p>
+    <p>Attendez,je reviens je penses avoir une idée.</p>
+    <p>Après une réflexion ardue, j'ai imaginé être un d4rk h4x0r et donc j'imagines qu'ils ont upload un webshell mais par contre c'est quoi le nom du webshell ? Pas de soucis, seclists posséde la solution avec leurs wordlists de nom de webshell qui est présent <a href="https://github.com/danielmiessler/SecLists/blob/master/Web-Shells/backdoor_list.txt">ici</a></p>
+    <p>Et bingo nous avons un webshell, avec cela nous allons rentrer un reverse shell et pouf nous avons un beau et magnifique shell maintenant faut penser au privesc</p>
+    <p>Bon j'imagines que vous connaissez le mot SUID ? Si non, je vais vous faire un petit résumé de ce que c'est .</p>
+    <p>Un SUID ou bien SetUID c'est un éxecutable qui est lancé avec généralement des droits root.</p>
+    <p>"Mais noodle comment on trouve des SUID ?", Alors pour trouver ce genre de binaire nous avons la commande <code>find / -perm -u=s 2>/dev/null</code> comme j'ai pu l'expliquer dans l'un de mes articles</p>
+    <p>Bon si je vous parles de SUID c'est que ça a un petit rapport à la box. En effet nous pouvons trouver le binaire screen qui n'est pas habituellement en tant qu'SUID checkons sa version pour voir si on peut utiliser ce binaire pour pouvoir privesc</p>
+    <p>Et bingo nous avons trouvé un exploit pour la version du binaire aka la version <code>4.5.0</code> et nous avons un <a href="https://www.exploit-db.com/exploits/41154">exploit</a> qui permet de abuser ld.so.preload</p>
+    <p>Et voilà c'est l'heure de la standing ovation, nous avons terminé les boxs du BookCTF et c'était une expérience assez incroyable de ma part bon je si vous êtes restés là c'est j'imagines pour la photo bon bah voilà</p>
+    <img src="img/bookctf/amouranth2.jpeg" > 
+  </section>
