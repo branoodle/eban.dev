@@ -143,8 +143,26 @@ code{
 <p>Alors nous sommes en tant qu'user nommé player.</p>
 <p>Après une très très très longue investigation (c'est faux) nous pouvons constater que le user player a le droit d'éxecuter un script bash en tant que user "Amouranth".</p>
 <p>Comment j'ai pu constater ça ? En faisant un simple <code>sudo -l</code></p>
-<p>Maintenant nous checkons le script qu'on doit executer</p>
-<code>script bash que mika doit me passer</code>
+<p>Maintenant nous checkons le script qu'on doit executer
+<code>#!/bin/bash
+ 
+echo -e "Commandes disponibles :\n"
+ 
+echo "1 : id"
+echo -e "2 : ip -c a\n"
+ 
+read -p "Quelle commande souhaitez-vous exécuter : " ans;
+ 
+case $ans in
+    1)
+        /usr/bin/id;;
+    2)
+        /sbin/ip -c a;;
+    *)
+        $ans;;
+    esac</code>
+    </p>
+
 <p>Nous pouvons voir que le script permet de input des commandes alors faisons pop un shell en tant que amouranth</p>
 <p>Et pouf nous sommes en tant qu'amouranth. Maintenant checkons un moyen d'avoir le flag root.</p>
 <p>Vous pouvez éxecuter le binaire /bin/cat en tant que root et devinez comment j'ai pu avoir cette info ? </p>
